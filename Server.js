@@ -36,12 +36,16 @@ module.exports = class Server{
 				]
 			}
 		}
+		console.log(author);
 		if(author){
-			embed.author = {
-				name: msg.author.username,
-				icon_url: msg.author.avatarURL
-			}
+			embed.content = author.mention;
+			//embed.embed.author = {
+			//	name: `@${author.username}#${author.discriminator}`,
+			//}
 		}
 		return embed;
+	}
+	matchesVersion(version){
+		return this.version.includes(version);
 	}
 }

@@ -14,6 +14,12 @@ class ServerManager{
 		const options = Object.values(this.servers);
 		return options[Math.floor(Math.random()*options.length)];
 	}
+	getRandomVersionedServer(version){
+		const options = Object.values(this.servers);
+		const matchingOptions = options.filter(server=>server.matchesVersion(version));
+		if(!matchingOptions.length) return;
+		return matchingOptions[Math.floor(Math.random()*matchingOptions.length)];
+	}
 	async checkIp(ip){
 		return await ping(ip, 25565).catch(e=>{});
 	}

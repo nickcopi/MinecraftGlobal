@@ -25,7 +25,7 @@ class Discord{
 	onMessageCreate(msg){
 		if(msg.author.id === this.client.user.id) return;
 		//console.log(msg);
-		const result = this.commandParser.parseCommand(msg.content);
+		const result = this.commandParser.parseCommand(msg.content,msg.author);
 		if(result) this.client.createMessage(msg.channel.id,result);
 	}
 	onError(error){

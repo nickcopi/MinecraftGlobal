@@ -1,6 +1,9 @@
 module.exports = class CommandParser{
 	constructor(serverManager){
 		this.serverManager = serverManager;
+		this.actions = {
+			'random':this.random.bind(this)
+		}
 	}
 	parseCommand(msg,author){
 		if(msg[0] !== '!') return;
@@ -8,8 +11,8 @@ module.exports = class CommandParser{
 		const words = line.split(' ');
 		const command = words.shift();
 		console.log(command,words);
-		if(!this[command]) return;
-		return this[command](words,author);
+		if(!(command in this.actions)) return;
+		return this.actions[command](words,author);
 
 	}
 	random(options,author){
@@ -17,6 +20,9 @@ module.exports = class CommandParser{
 			const server = this.serverManager.getRandomServer();
 			return server.toEmbed(author);
 		}
+		const server = this.serverManager.getRandomVersionedServer(options[0]);
+		if(server) return server.toEmbed(author);
+		return `No server can be found for version ${options[0]}.`;
 	}
 
 }
