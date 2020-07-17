@@ -1,14 +1,35 @@
 const fs = require('fs');
 const ping = require('minecraft-server-util');
 const Server = require('./Server');
+const cacheFile = 'serverCache.json';
+const ingestFile = 'servers';
 class ServerManager{
 	constructor(){
-		this.servers = {
-
+		this.servers = {};
+		this.bads = [];
+	}
+	readCache(){
+		try{
+			return JSON.parse(fs.readFileSync(cacheFile).toString()); 	
+		} catch(e){
+			return{
+				bads:[],
+				servers:{}
+			}
 		}
 	}
+	writeCache(){
+		fs.writeFileSync(cacheFile,JSON.stringify({
+			bads:this.bads,
+			servers:this.servers
+		}));
+	}
 	async ingestServers(){
-		await this.processIps(fs.readFileSync('servers').toString().split('\n'));
+		const cache = this.readCache();
+		this.bads = cache.bads;
+		this.servers = cache.servers;
+		await this.processIps(fs.readFileSync(ingestFile).toString().split('\n'));
+		this.writeCache();
 	}
 	getRandomServer(){
 		const options = Object.values(this.servers);
@@ -43,12 +64,13 @@ class ServerManager{
 	}
 	async processIps(ips){
 		const pings = await Promise.all(ips.map(async ip=>{
-			if(this.servers[ip]) return;
-			return await this.checkIp(ip);
+			if(this.servers[ip] || this.bads.includes(ip)) return;
+			const ping = await this.checkIp(ip);
+			if(!ping) this.bads.push(ip);
+			return ping;
 		}));
 		pings.filter(ping=>ping).forEach(ping=>{
 			this.servers[ping.host] = Object.assign(new Server,ping);
-			//return `${ping.host} of version ${ping.version} with ${ping.onlinePlayers}/${ping.maxPlayers} described as ${ping.descriptionText}`;
 		});
 	}
 
