@@ -4,14 +4,16 @@ module.exports = class CommandParser{
 		this.actions = {
 			'random':this.random.bind(this),
 			'check':this.check.bind(this),
-			'active':this.active.bind(this)
+			'active':this.active.bind(this),
+			'upvote':this.upvote.bind(this),
+			//'downvote':this.downvote.bind(this)
 		}
 	}
 	async parseCommand(msg,author){
 		if(msg[0] !== '!') return;
 		const line = msg.substring(1, msg.length);
 		const words = line.split(' ');
-		const command = words.shift();
+		const command = words.shift().toLowerCase();
 		console.log(command,words);
 		if(!(command in this.actions)) return;
 		return await this.actions[command](words,author);
@@ -43,6 +45,13 @@ module.exports = class CommandParser{
 		const server = this.serverManager.getRandomActiveVersionedServer(options[0]);
 		if(server) return server.toEmbed(author);
 		return `No active server can be found for version ${options[0]}.`;
+	}
+	async upvote(options,author){
+		if(!options[0])
+			return `An IP to vote on must be specified.`;
+		console.log(author);
+		return this.serverManager.upvote(options[0],author.id);
+
 	}
 
 }

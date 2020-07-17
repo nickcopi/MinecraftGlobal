@@ -32,10 +32,12 @@ class ServerManager{
 		Object.entries(this.servers).forEach(([k,v])=>{
 			this.servers[k].votes = Object.assign(new Votes, v.votes);
 		});
-		await this.updateServers();
+		//await this.updateServers();
 		await this.processIps(fs.readFileSync(ingestFile).toString().split('\n'));
 		this.writeCache();
-		console.log(this.servers);
+	}
+	upvote(ip,id){
+		
 	}
 	getRandomServer(){
 		const options = Object.values(this.servers);
@@ -49,15 +51,15 @@ class ServerManager{
 	}
 	getRandomActiveServer(){
 		const options = Object.values(this.servers);
-		const matchingoptions = options.filter(server=>server.isActive());
-		if(!matchingoptions.length) return;
-		return matchingoptions[math.floor(math.random()*matchingoptions.length)];
+		const matchingOptions = options.filter(server=>server.isActive());
+		if(!matchingOptions.length) return;
+		return matchingOptions[Math.floor(Math.random()*matchingOptions.length)];
 	}
 	getRandomActiveVersionedServer(version){
 		const options = Object.values(this.servers);
-		const matchingoptions = options.filter(server=>server.isActive() && server.matchesversion(version));
-		if(!matchingoptions.length) return;
-		return matchingoptions[math.floor(math.random()*matchingoptions.length)];
+		const matchingOptions = options.filter(server=>server.isActive() && server.matchesVersion(version));
+		if(!matchingOptions.length) return;
+		return matchingOptions[Math.floor(Math.random()*matchingOptions.length)];
 	}
 	async checkIp(ip){
 		return await ping(ip, 25565).catch(e=>{});
@@ -80,8 +82,10 @@ class ServerManager{
 		updated.forEach(update=>{
 			if(!update.server)
 				delete this.servers[update.ip];
-			update.server.votes = this.servers[update.ip].votes;
-			this.servers[update.ip] = update.server;
+			else {
+				update.server.votes = this.servers[update.ip].votes;
+				this.servers[update.ip] = update.server;
+			}
 		});
 	}
 	async processIps(ips){
