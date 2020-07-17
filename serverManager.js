@@ -28,6 +28,7 @@ class ServerManager{
 		const cache = this.readCache();
 		this.bads = cache.bads;
 		this.servers = cache.servers;
+		await this.updateServers();
 		await this.processIps(fs.readFileSync(ingestFile).toString().split('\n'));
 		this.writeCache();
 	}
@@ -61,6 +62,22 @@ class ServerManager{
 		if(!ping) return; 
 		const server = Object.assign(new Server,ping);
 		return server;
+	}
+	async updateServers(){
+		const servers = Object.values(this.servers);
+		const updated = await Promise.all(servers.map(async server=>{
+			const updatedServer = await this.check(server.host);
+			return {
+				ip: server.host,
+				server:updatedServer
+			}
+		}));
+			console.log(updated);
+		updated.forEach(update=>{
+			if(!update.server)
+				delete this.servers[update.ip];
+			this.servers[update.ip] = update.server;
+		});
 	}
 	async processIps(ips){
 		const pings = await Promise.all(ips.map(async ip=>{
