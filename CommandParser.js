@@ -7,7 +7,8 @@ module.exports = class CommandParser{
 			'active':this.active.bind(this),
 			'upvote':this.upvote.bind(this),
 			'downvote':this.downvote.bind(this),
-			'top':this.top.bind(this)
+			'top':this.top.bind(this),
+			'help':this.help.bind(this)
 		}
 	}
 	async parseCommand(msg,author){
@@ -65,8 +66,50 @@ module.exports = class CommandParser{
 		}
 		const servers = this.serverManager.getTopServers(num);
 		return servers.map(server=>server.toString()).join('\n').substring(0,1999);
+	}
+	async help(options,author){
+		return {
+			"embed": {
+				"title": `Bot Help`,
+				"color": 26112,
+				"timestamp": (new Date()).toISOString(),
+				"footer": {
+					"icon_url": "https://cdn.discordapp.com/icons/733690560753172522/5a7e245a9c27884ef030e7fcf9689d34.png",
+					"text": "Minecraft Global"
+				},
+				fields:[
+					{
+						name:'!help',
+						value:'Display this help text'
+					},
+					{
+						name:'!random',
+						value:'Returns a random server, may be run as !random [version] to find a random server with a specific version.'
+					},
+					{
+						name: '!active',
+						value:'Returns a random server with at least 1 other person on it, may be run as !active [version] to find an active server with a specific version.'
+					},
+					{
+						name:'!check',
+						value:'Checks a specific IP for its minecraft server status. Must be run as !check [ip].'
+					},
+					{
+						name:'!upvote', 
+						value:'Upvotes a server. Must be run as !upvote [ip].'
+					},
+					{
+						name: '!downvote',
+						value: 'Upvotes a server. Must be run as !downvote [ip].'
+					},
+					{
+						name:'!top',
+						value:'Lists the top X most upvoted servers. Must be run as !top [x].'
+					}
+				]
+			}
+		}
 
-		
 	}
 	
 

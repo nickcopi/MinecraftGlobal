@@ -2,7 +2,6 @@ require('dotenv').config();
 const settings = require('./settings.json');
 const CommandParser = require('./CommandParser');
 const serverManager = require('./serverManager');
-require('./serverSchedule')(serverManager);
 const Eris = require('eris');
 const clientOptions = {
     intents: [
@@ -35,6 +34,11 @@ class Discord{
 	getChannel(channelName){
 		return this.client.guilds.get(this.settings.botGuild).channels.find(c => c.name === channel);
 	}
+	sendTop(){
+		const server  = this.commandParser.serverManager.getTopServers(1)[0];
+		if(!server) return;
+		this.client.createMessage(this.settings.featuredChannelId,server.toEmbed());
+	}
 
 }
 
@@ -43,6 +47,7 @@ const init = async()=>{
 	await serverManager.ingestServers();
 	console.log('Initiating Discord bot.');
 	const discord = new Discord(settings);
+	require('./serverSchedule')(serverManager,discord);
 }
 init();
 
