@@ -8,6 +8,11 @@ class ServerManager{
 	constructor(){
 		this.servers = {};
 		this.bads = [];
+		process.on('SIGINT',()=>{
+			console.log('Exiting...');
+			this.writeCache();
+			process.exit();
+		});
 	}
 	readCache(){
 		try{
@@ -30,18 +35,31 @@ class ServerManager{
 		this.bads = cache.bads;
 		this.servers = cache.servers;
 		Object.entries(this.servers).forEach(([k,v])=>{
+			this.servers[k] = Object.assign(new Server,v);
 			this.servers[k].votes = Object.assign(new Votes, v.votes);
 		});
 		//await this.updateServers();
 		await this.processIps(fs.readFileSync(ingestFile).toString().split('\n'));
 		this.writeCache();
 	}
+	getTopServers(num){
+		const options = Object.values(this.servers);
+		return options.sort((a,b)=>a.votes.score - b.votes.score).slice(0,num);
+	}
 	upvote(ip,id){
-		
+		if(!(ip in this.servers)) return `Cannot find server with ip ${ip}.`
+		if(this.servers[ip].votes.vote(1,id)) return `Upvoted ${ip}!`;
+		return `You have already voted on ${ip}!`;
+	}
+	downvote(ip,id){
+		if(!(ip in this.servers)) return `Cannot find server with ip ${ip}.`
+		if(this.servers[ip].votes.vote(-1,id)) return `Downvoted ${ip}!`;
+		return `You have already voted on ${ip}!`;
 	}
 	getRandomServer(){
 		const options = Object.values(this.servers);
-		return options[Math.floor(Math.random()*options.length)];
+		const selected = options[Math.floor(Math.random()*options.length)];
+		return selected;
 	}
 	getRandomVersionedServer(version){
 		const options = Object.values(this.servers);
@@ -68,6 +86,7 @@ class ServerManager{
 		const ping = await this.checkIp(ip);
 		if(!ping) return; 
 		const server = Object.assign(new Server,ping);
+		if(this.servers[ip]) server.votes = this.servers[ip].votes;
 		return server;
 	}
 	async updateServers(){

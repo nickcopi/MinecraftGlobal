@@ -35,6 +35,10 @@ module.exports = class Server{
 					{
 						"name": "Description",
 						"value": this.descriptionText
+					},
+					{
+						"name": "Score",
+						"value": this.votes.score
 					}
 				]
 			}

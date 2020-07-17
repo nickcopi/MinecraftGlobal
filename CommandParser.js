@@ -6,7 +6,8 @@ module.exports = class CommandParser{
 			'check':this.check.bind(this),
 			'active':this.active.bind(this),
 			'upvote':this.upvote.bind(this),
-			//'downvote':this.downvote.bind(this)
+			'downvote':this.downvote.bind(this),
+			'top':this.top.bind(this)
 		}
 	}
 	async parseCommand(msg,author){
@@ -49,9 +50,16 @@ module.exports = class CommandParser{
 	async upvote(options,author){
 		if(!options[0])
 			return `An IP to vote on must be specified.`;
-		console.log(author);
 		return this.serverManager.upvote(options[0],author.id);
+	}
+	async downvote(options,author){
+		if(!options[0])
+			return `An IP to vote on must be specified.`;
+		return this.serverManager.downvote(options[0],author.id);
 
 	}
+	async top(options,author){
+	}
+	
 
 }
