@@ -5,6 +5,9 @@ module.exports = class Server{
 			this.votes = Object.assign(new Votes, this.votes);
 		else this.votes = new Votes();
 	}
+	toString(){
+		return `${this.host}: Minecraft ${this.version} with ${this.onlinePlayers}/${this.maxPlayers} online and score ${this.votes.score}`;
+	}
 	toEmbed(author){
 		const embed =  {
 			"embed": {

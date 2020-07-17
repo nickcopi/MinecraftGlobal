@@ -2,6 +2,7 @@ require('dotenv').config();
 const settings = require('./settings.json');
 const CommandParser = require('./CommandParser');
 const serverManager = require('./serverManager');
+require('./serverSchedule')(serverManager);
 const Eris = require('eris');
 const clientOptions = {
     intents: [
@@ -24,15 +25,15 @@ class Discord{
 	}
 	async onMessageCreate(msg){
 		if(msg.author.id === this.client.user.id) return;
-		//console.log(msg);
+		if(msg.channel.id !== this.settings.botChannelId) return;
 		const result = await this.commandParser.parseCommand(msg.content,msg.author);
 		if(result) this.client.createMessage(msg.channel.id,result);
 	}
 	onError(error){
 		console.error(error);
 	}
-	getChannel(ircChannel){
-		return this.client.guilds.get(this.settings.bridgeGuild).channels.find(c => c.name === this.settings.channels[ircChannel])
+	getChannel(channelName){
+		return this.client.guilds.get(this.settings.botGuild).channels.find(c => c.name === channel);
 	}
 
 }

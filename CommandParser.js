@@ -59,6 +59,14 @@ module.exports = class CommandParser{
 
 	}
 	async top(options,author){
+		const num = Number(options[0]);
+		if(!num || isNaN(num)){
+			return `A valid number of top servers must be specified.`;
+		}
+		const servers = this.serverManager.getTopServers(num);
+		return servers.map(server=>server.toString()).join('\n').substring(0,1999);
+
+		
 	}
 	
 

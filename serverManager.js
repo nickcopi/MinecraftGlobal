@@ -44,7 +44,7 @@ class ServerManager{
 	}
 	getTopServers(num){
 		const options = Object.values(this.servers);
-		return options.sort((a,b)=>a.votes.score - b.votes.score).slice(0,num);
+		return options.sort((b,a)=>a.votes.score - b.votes.score).slice(0,num);
 	}
 	upvote(ip,id){
 		if(!(ip in this.servers)) return `Cannot find server with ip ${ip}.`
