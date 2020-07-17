@@ -23,6 +23,12 @@ class ServerManager{
 	async checkIp(ip){
 		return await ping(ip, 25565).catch(e=>{});
 	}
+	async check(ip){
+		const ping = await this.checkIp(ip);
+		if(!ping) return; 
+		const server = Object.assign(new Server,ping);
+		return server;
+	}
 	async processIps(ips){
 		const pings = await Promise.all(ips.map(async ip=>{
 			if(this.servers[ip]) return;

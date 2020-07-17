@@ -36,7 +36,6 @@ module.exports = class Server{
 				]
 			}
 		}
-		console.log(author);
 		if(author){
 			embed.content = author.mention;
 			//embed.embed.author = {
