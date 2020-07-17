@@ -1,6 +1,9 @@
+const Votes = require('./Votes');
 module.exports = class Server{
 	constructor(){
-
+		if(this.votes)
+			this.votes = Object.assign(new Votes, this.votes);
+		else this.votes = new Votes();
 	}
 	toEmbed(author){
 		const embed =  {

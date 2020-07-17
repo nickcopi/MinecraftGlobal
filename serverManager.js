@@ -1,6 +1,7 @@
 const fs = require('fs');
 const ping = require('minecraft-server-util');
 const Server = require('./Server');
+const Votes = require('./Votes');
 const cacheFile = 'serverCache.json';
 const ingestFile = 'servers';
 class ServerManager{
@@ -28,9 +29,13 @@ class ServerManager{
 		const cache = this.readCache();
 		this.bads = cache.bads;
 		this.servers = cache.servers;
+		Object.entries(this.servers).forEach(([k,v])=>{
+			this.servers[k].votes = Object.assign(new Votes, v.votes);
+		});
 		await this.updateServers();
 		await this.processIps(fs.readFileSync(ingestFile).toString().split('\n'));
 		this.writeCache();
+		console.log(this.servers);
 	}
 	getRandomServer(){
 		const options = Object.values(this.servers);
@@ -72,10 +77,10 @@ class ServerManager{
 				server:updatedServer
 			}
 		}));
-			console.log(updated);
 		updated.forEach(update=>{
 			if(!update.server)
 				delete this.servers[update.ip];
+			update.server.votes = this.servers[update.ip].votes;
 			this.servers[update.ip] = update.server;
 		});
 	}
