@@ -47,4 +47,7 @@ module.exports = class Server{
 	matchesVersion(version){
 		return this.version.includes(version);
 	}
+	isActive(){
+		return this.onlinePlayers > 0;
+	}
 }

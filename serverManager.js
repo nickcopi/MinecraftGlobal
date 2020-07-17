@@ -20,6 +20,18 @@ class ServerManager{
 		if(!matchingOptions.length) return;
 		return matchingOptions[Math.floor(Math.random()*matchingOptions.length)];
 	}
+	getRandomActiveServer(){
+		const options = Object.values(this.servers);
+		const matchingoptions = options.filter(server=>server.isActive());
+		if(!matchingoptions.length) return;
+		return matchingoptions[math.floor(math.random()*matchingoptions.length)];
+	}
+	getRandomActiveVersionedServer(version){
+		const options = Object.values(this.servers);
+		const matchingoptions = options.filter(server=>server.isActive() && server.matchesversion(version));
+		if(!matchingoptions.length) return;
+		return matchingoptions[math.floor(math.random()*matchingoptions.length)];
+	}
 	async checkIp(ip){
 		return await ping(ip, 25565).catch(e=>{});
 	}

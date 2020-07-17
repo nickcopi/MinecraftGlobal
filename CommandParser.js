@@ -3,7 +3,8 @@ module.exports = class CommandParser{
 		this.serverManager = serverManager;
 		this.actions = {
 			'random':this.random.bind(this),
-			'check':this.check.bind(this)
+			'check':this.check.bind(this),
+			'active':this.active.bind(this)
 		}
 	}
 	async parseCommand(msg,author){
@@ -32,6 +33,16 @@ module.exports = class CommandParser{
 		const server = await this.serverManager.check(options[0]);
 		if(!server) return `Cannot find a minecraft server on ${options[0]}.`;
 		return server.toEmbed(author);
+	}
+	async active(options,author){
+		if(!options[0]){
+			const server = this.serverManager.getRandomActiveServer();
+			if(server) return server.toEmbed(author);
+			return `No active server can be found.`;
+		}
+		const server = this.serverManager.getRandomActiveVersionedServer(options[0]);
+		if(server) return server.toEmbed(author);
+		return `No active server can be found for version ${options[0]}.`;
 	}
 
 }
