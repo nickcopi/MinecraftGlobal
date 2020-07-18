@@ -55,7 +55,7 @@ module.exports = class Server{
 		return embed;
 	}
 	matchesVersion(version){
-		return this.version.includes(version);
+		return this.version && this.version.includes(version);
 	}
 	isActive(){
 		return this.onlinePlayers > 0;
